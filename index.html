@@ -1,6 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Grocery Store</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f4f4f4;
+}
+
+.container{
+    width:90%;
+    max-width:1000px;
+    margin:30px auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.2);
+}
+
+h1{
+    text-align:center;
+    color:green;
+    margin-bottom:20px;
+}
+
+input,select{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    margin-top:10px;
+    color:white;
+}
+
+.save{
+    background:green;
+}
+
+.delete{
+    background:red;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+table th,table td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+}
+
+th{
+    background:rgb(26, 0, 128);
+    color:white;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>ROYAL GROCERY STORE</h1>
+
+<input type="number" id="number" placeholder="Customer Number">
+<input type="text" id="name" placeholder="Customer Name">
+<input type="text" id="product" placeholder="Product Name">
+<input type="number" id="qty" placeholder="Quantity">
+<input type="number" id="price" placeholder="Price">
+
+<select id="delivery">
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<button class="save" onclick="saveData()">Save Order</button>
+
+<table>
+<thead>
+<tr>
+<th>Customer No</th>
+<th>Name</th>
+<th>Product</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Total</th>
+<th>Delivery</th>
+<th>Delete</th>
+</tr>
+</thead>
+
+<tbody id="tableData"></tbody>
+</table>
+
+</div>
+
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCIYjFovEBaXFDb9nTtnsV2mSUhJ_6vlGYoo0df5Mz-hZaLaINm1ema8cvwxwpxKRv/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYt9-SgvyltVXmrwfRZUJaipRab_fPaNjnDn1HB6fG3EPtMVRZbVDWAW-vPyLnPXoUpQ/exec";
 
 let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
@@ -32,35 +149,31 @@ let order = {
     delivery
 };
 
-// ✅ Save locally
+// Save locally
 orders.push(order);
 localStorage.setItem("orders", JSON.stringify(orders));
 
-// ✅ Send to Google Sheets
+// Send to Google Sheets
 fetch(SCRIPT_URL, {
     method: "POST",
-    headers: {
-        "Content-Type": "text/plain"
-    },
     body: JSON.stringify(order)
 })
 .then(res => res.text())
 .then(data => {
-    console.log("Saved to Google Sheet:", data);
+    console.log("Saved:", data);
 })
 .catch(err => {
-    console.error("Error sending to Sheet:", err);
+    console.error("Error:", err);
 });
 
-// refresh UI
 showData();
 
 // reset form
-document.getElementById("number").value = "";
-document.getElementById("name").value = "";
-document.getElementById("product").value = "";
-document.getElementById("qty").value = "";
-document.getElementById("price").value = "";
+document.getElementById("number").value="";
+document.getElementById("name").value="";
+document.getElementById("product").value="";
+document.getElementById("qty").value="";
+document.getElementById("price").value="";
 
 }
 
@@ -98,3 +211,6 @@ showData();
 }
 
 </script>
+
+</body>
+</html>
