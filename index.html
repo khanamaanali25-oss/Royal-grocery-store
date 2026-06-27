@@ -1,189 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Royal Grocery Store</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
 <style>
-
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Poppins,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
 
 body{
-background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
+    background:#f4f4f4;
 }
 
 .container{
-width:450px;
-background:white;
-padding:35px;
-border-radius:20px;
-box-shadow:0px 20px 50px rgba(0,0,0,.3);
+    width:90%;
+    max-width:1000px;
+    margin:30px auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.2);
 }
 
-.logo{
-text-align:center;
-font-size:30px;
-font-weight:700;
-color:#2E7D32;
-margin-bottom:8px;
+h1{
+    text-align:center;
+    color:green;
+    margin-bottom:20px;
 }
 
-.subtitle{
-text-align:center;
-color:gray;
-margin-bottom:25px;
-}
-
-.input{
-width:100%;
-padding:14px;
-margin-top:12px;
-border:none;
-background:#f4f4f4;
-border-radius:12px;
-font-size:15px;
-transition:.3s;
-}
-
-.input:focus{
-background:white;
-outline:none;
-border:2px solid #2E7D32;
+input,select{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
 }
 
 button{
-width:100%;
-padding:15px;
-margin-top:20px;
-border:none;
-border-radius:12px;
-background:#2E7D32;
-color:white;
-font-size:18px;
-font-weight:600;
-cursor:pointer;
-transition:.3s;
+    padding:10px 20px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    margin-top:10px;
+    color:white;
 }
 
-button:hover{
-background:#1B5E20;
+.save{
+    background:green;
 }
 
-#msg{
-text-align:center;
-margin-top:20px;
-font-weight:600;
+.delete{
+    background:red;
 }
 
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+table th,table td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+}
+
+th{
+    background:rgb(26, 0, 128);
+    color:white;
+}
 </style>
 
 </head>
-
 <body>
 
 <div class="container">
 
-<div class="logo">👑 Royal Grocery Store</div>
+<h1>ROYAL GROCERY STORE</h1>
 
-<div class="subtitle">Customer Registration Form</div>
+<input type="number" id="number" placeholder="Customer Number">
 
-<form id="myForm">
+<input type="text" id="name" placeholder="Customer Name">
 
-<input class="input" type="text" id="name" placeholder="Full Name" required>
+<input type="text" id="product" placeholder="Product Name">
 
-<input class="input" type="tel" id="mobile" placeholder="Mobile Number" required>
+<input type="number" id="qty" placeholder="Quantity">
 
-<input class="input" type="email" id="email" placeholder="Email">
+<input type="number" id="price" placeholder="Price">
 
-<textarea class="input" id="address" placeholder="Address"></textarea>
+<select id="delivery">
+<option>Yes</option>
+<option>No</option>
+</select>
 
-<input class="input" type="text" id="city" placeholder="City">
+<button class="save" onclick="saveData()">Save Order</button>
 
-<input class="input" type="number" id="pin" placeholder="PIN Code">
+<table>
 
-<button type="submit" id="btn">Save Customer</button>
+<thead>
+<tr>
+<th>Customer No</th>
+<th>Name</th>
+<th>Product</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Total</th>
+<th>Delivery</th>
+<th>Delete</th>
+</tr>
+</thead>
 
-</form>
+<tbody id="tableData"></tbody>
 
-<div id="msg"></div>
+</table>
 
 </div>
 
 <script>
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbx9PSatdSnQ-lMD8NoIWleSbaan6-3nWMvbYm5-DyH4h4w4Iubp-QJkTAUHxAaFX2d9/exec";
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
-const form = document.getElementById("myForm");
-const msg = document.getElementById("msg");
-const btn = document.getElementById("btn");
+showData();
 
-form.addEventListener("submit", function(e){
+function saveData(){
 
-e.preventDefault();
+let number=document.getElementById("number").value;
+let name=document.getElementById("name").value;
+let product=document.getElementById("product").value;
+let qty=document.getElementById("qty").value;
+let price=document.getElementById("price").value;
+let delivery=document.getElementById("delivery").value;
 
-btn.disabled = true;
-btn.innerText = "Saving...";
+if(number=="" || name=="" || product==""){
+    alert("Please fill all fields");
+    return;
+}
 
-fetch(scriptURL, {
-method: "POST",
-body: JSON.stringify({
-name: document.getElementById("name").value,
-mobile: document.getElementById("mobile").value,
-email: document.getElementById("email").value,
-address: document.getElementById("address").value,
-city: document.getElementById("city").value,
-pin: document.getElementById("pin").value
-})
-})
+let total=qty*price;
 
-.then(res => res.json())
-.then(data => {
+orders.push({
+number,
+name,
+product,
+qty,
+price,
+total,
+delivery
+});
 
-msg.innerText = "Your info is saved successfully ✅";
-msg.style.color = "green";
+localStorage.setItem("orders",JSON.stringify(orders));
 
-// reset form for next customer
-form.reset();
+showData();
 
-// focus first input
-document.getElementById("name").focus();
+document.getElementById("number").value="";
+document.getElementById("name").value="";
+document.getElementById("product").value="";
+document.getElementById("qty").value="";
+document.getElementById("price").value="";
+}
 
-// reset button
-btn.disabled = false;
-btn.innerText = "Save Customer";
+function showData(){
 
-// hide message after 3 sec
-setTimeout(() => {
-msg.innerText = "";
-}, 3000);
+let table="";
 
-})
+orders.forEach((item,index)=>{
 
-.catch(err => {
-
-msg.innerText = "Error saving data ❌";
-msg.style.color = "red";
-
-btn.disabled = false;
-btn.innerText = "Save Customer";
+table+=`
+<tr>
+<td>${item.number}</td>
+<td>${item.name}</td>
+<td>${item.product}</td>
+<td>${item.qty}</td>
+<td>₹${item.price}</td>
+<td>₹${item.total}</td>
+<td>${item.delivery}</td>
+<td><button class="delete" onclick="deleteData(${index})">Delete</button></td>
+</tr>
+`;
 
 });
 
-});
+document.getElementById("tableData").innerHTML=table;
+
+}
+
+function deleteData(index){
+
+orders.splice(index,1);
+
+localStorage.setItem("orders",JSON.stringify(orders));
+
+showData();
+
+}
 
 </script>
 
