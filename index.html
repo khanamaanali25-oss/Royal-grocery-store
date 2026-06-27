@@ -156,11 +156,14 @@ localStorage.setItem("orders", JSON.stringify(orders));
 // Send to Google Sheets
 fetch(SCRIPT_URL, {
     method: "POST",
+    headers: {
+        "Content-Type": "text/plain"
+    },
     body: JSON.stringify(order)
 })
 .then(res => res.text())
 .then(data => {
-    console.log("Saved:", data);
+    console.log("Saved to Sheet:", data);
 })
 .catch(err => {
     console.error("Error:", err);
