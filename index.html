@@ -199,6 +199,106 @@ showData();
 
 }
 
+<script>
+
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+// 🔴 CHANGE THIS to your Google Apps Script URL
+const SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL";
+
+showData();
+
+function saveData(){
+
+let number=document.getElementById("number").value;
+let name=document.getElementById("name").value;
+let product=document.getElementById("product").value;
+let qty=document.getElementById("qty").value;
+let price=document.getElementById("price").value;
+let delivery=document.getElementById("delivery").value;
+
+if(number=="" || name=="" || product=="" || qty=="" || price==""){
+    alert("Please fill all fields");
+    return;
+}
+
+let total = qty * price;
+
+let order = {
+    number,
+    name,
+    product,
+    qty,
+    price,
+    total,
+    delivery
+};
+
+// ✅ 1. Save locally
+orders.push(order);
+localStorage.setItem("orders", JSON.stringify(orders));
+
+// ✅ 2. Send to Google Sheets
+fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: {
+        "Content-Type": "text/plain"
+    },
+    body: JSON.stringify(order)
+})
+.then(res => res.text())
+.then(data => {
+    console.log("Saved to Sheet:", data);
+})
+.catch(err => {
+    console.error("Google Sheet Error:", err);
+});
+
+// refresh table
+showData();
+
+// reset form
+document.getElementById("number").value="";
+document.getElementById("name").value="";
+document.getElementById("product").value="";
+document.getElementById("qty").value="";
+document.getElementById("price").value="";
+
+}
+
+function showData(){
+
+let table="";
+
+orders.forEach((item,index)=>{
+
+table+=`
+<tr>
+<td>${item.number}</td>
+<td>${item.name}</td>
+<td>${item.product}</td>
+<td>${item.qty}</td>
+<td>₹${item.price}</td>
+<td>₹${item.total}</td>
+<td>${item.delivery}</td>
+<td><button class="delete" onclick="deleteData(${index})">Delete</button></td>
+</tr>
+`;
+
+});
+
+document.getElementById("tableData").innerHTML=table;
+
+}
+
+function deleteData(index){
+
+orders.splice(index,1);
+localStorage.setItem("orders", JSON.stringify(orders));
+showData();
+
+}
+
 </script>
 
 </body>
